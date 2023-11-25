@@ -1,0 +1,15 @@
+The diagram you've provided is a good high-level representation of a typical MLOps workflow on AWS SageMaker. It includes the main components such as:
+
+GitLab – Acts as our code repository and enables CI/CD using GitLab pipelines. The custom SageMaker project template creates two repositories (model build and model deploy) in your GitLab account.
+The first repository (model build) provides code to create a multi-step model building pipeline. This includes steps for data processing, model training, model evaluation, and conditional model registration based on accuracy. It trains a linear regression model using the XGBoost algorithm on the well-known UCI Machine Learning Abalone dataset.
+The second repository (model deploy) contains the code and configuration files for model deployment, as well as the test scripts required to pass the quality benchmark. These are code stubs that must be defined for your use case.
+Each repository also has a GitLab CI pipeline. The model build pipeline automatically triggers and runs the pipeline from end to end whenever a new commit is made to the model build repository. The model deploy pipeline is triggered whenever a new model version is added to the model registry, and the model version status is marked as Approved.
+SageMaker Pipelines – Contains the directed acyclic graph (DAG) that includes data preparation, model training, and model evaluation.
+Amazon S3 – An Amazon Simple Storage Service (Amazon S3) bucket stores the output model artifacts that are generated from the pipeline.
+AWS Lambda – Two AWS Lambda functions are created, which we review in more detail later in this post:
+One function seeds the code into your two GitLab repositories.
+One function triggers the model deployment pipeline after the new model is registered in the model registry.
+SageMaker Model Registry – Tracks the model versions and respective artifacts, including the lineage and metadata. A model package group is created that contains the group of related model versions. The model registry also manages the approval status of the model version for downstream deployment.
+Amazon EventBridge – Amazon EventBridge monitors all changes to the model registry. It also contains a rule that triggers the Lambda function for the model deploy pipeline, when the model package version state changes from PendingManualApproval to Approved in the model registry.
+AWS CloudFormation – AWS CloudFormation deploys the model and creates the SageMaker endpoints when the model deploy pipeline is triggered by the approval of the trained model.
+SageMaker hosting – Creates two HTTPS real-time endpoints to perform inference. The hosting option is configurable, for example, for batch transform or asynchronous inference. The staging endpoint is created when the model deploy pipeline is triggered by the approval of the trained model. This endpoint is used to evaluate the deployed model by confirming it’s generating predictions that meet our target accuracy requirements. When the model is ready to be deployed in production, a production endpoint is provisioned by manually starting the job in the GitLab model deploy pipeline.
