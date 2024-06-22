@@ -1,0 +1,43 @@
+# Cargo
+/target/
+**/*.rs.bk
+
+# Artifacts
+/debug/
+release/
+
+# Binaries
+*.exe
+*.exe.*
+*.dll
+*.dylib
+*.so
+
+# Runtime files
+*.log
+*.out
+*.pid
+
+# Other
+*.swp
+*.bak
+*.tmp
+*.old
+*.orig
+
+# MacOS
+.DS_Store
+
+# Linux
+*~
+
+# Node
+node_modules/
+
+# IDEs
+.idea/
+.vscode/
+*.sublime-workspace
+
+# Rust
+Cargo.lock
